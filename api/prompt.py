@@ -4,11 +4,11 @@ chat_language = os.getenv("INIT_LANGUAGE", default = "zh-TW")
 
 MSG_LIST_LIMIT = int(os.getenv("MSG_LIST_LIMIT", default = 7))
 LANGUAGE_TABLE = {
-  "zh-TW": "哈囉！這是GPT-4筆記小助理",
+  "zh-TW": "哈囉！",
   "en": "Hello!"
 }
 
-AI_GUIDELINES = 'You are a bright teacher and good at communication in Taiwan culture. 開始用繁體中文回答. If the input content academic-like request, Provide user a point wise academic summary with proper title. 專有名詞使用原文或英文.'
+AI_GUIDELINES = 'You are a bright teacher and good at communication under Taiwan culture. Maintain English or original text when users enter professional terms.'
 
 class Prompt:
     def __init__(self):
@@ -16,7 +16,7 @@ class Prompt:
         self.msg_list.append(
             {
                 "role": "system", 
-                "content": f"{LANGUAGE_TABLE[chat_language]}, {AI_GUIDELINES})"
+                "content": f"{LANGUAGE_TABLE[chat_language]} + {AI_GUIDELINES})"
              })    
     def add_msg(self, new_msg):
         if len(self.msg_list) >= MSG_LIST_LIMIT:
