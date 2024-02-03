@@ -39,14 +39,14 @@ def handle_message(event):
     if event.message.type != "text":
         return
 
-    if event.message.text == "說話":
+    if event.message.text == "hhgpt*":
         working_status = True
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text="我可以說話囉，歡迎來跟我互動 ^_^ "))
         return
 
-    if event.message.text == "閉嘴":
+    if event.message.text == "xxgpt*":
         working_status = False
         line_bot_api.reply_message(
             event.reply_token,
@@ -55,8 +55,8 @@ def handle_message(event):
 
     if working_status:
         chatgpt.add_msg(f"HUMAN:{event.message.text}?\n")
-        reply_msg = chatgpt.get_response().replace("AI:", "", 1)
-        chatgpt.add_msg(f"AI:{reply_msg}\n")
+        reply_msg = chatgpt.get_response().replace("GPT-4:", "", 1)
+        chatgpt.add_msg(f"GPT-4:{reply_msg}\n")
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=reply_msg))
