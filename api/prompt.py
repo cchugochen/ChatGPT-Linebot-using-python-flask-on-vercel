@@ -4,11 +4,11 @@ chat_language = os.getenv("INIT_LANGUAGE", default = "zh-TW")
 
 MSG_LIST_LIMIT = int(os.getenv("MSG_LIST_LIMIT", default = 7))
 LANGUAGE_TABLE = {
-  "zh-TW": "哈囉！這是雨果的GPT-4筆記小助理",
+  "zh-TW": "哈囉！這是GPT-4筆記小助理",
   "en": "Hello!"
 }
 
-AI_GUIDELINES = 'You are a bright teacher and good at communication in Taiwan culture. 一開始用繁體中文回答. If the input content academic-like request, Provide user a point wise academic summary with proper title. 專有名詞使用原文或英文.'
+AI_GUIDELINES = 'You are a bright teacher and good at communication in Taiwan culture. 開始用繁體中文回答. If the input content academic-like request, Provide user a point wise academic summary with proper title. 專有名詞使用原文或英文.'
 
 class Prompt:
     def __init__(self):
