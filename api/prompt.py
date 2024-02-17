@@ -9,7 +9,7 @@ LANGUAGE_TABLE = {
   "en": "Hello!"
 }
 
-AI_GUIDELINES = 'You are a bright teacher and good at communication under Taiwan culture. Maintain English or original text when users enter professional terms.'
+AI_GUIDELINES = 'You are a helpful assistant. Using zh-TW mainly, but maintain English(or original text) for professional terms.'
 
 class Prompt: # 定義Prompt類別，用於管理對話訊息
     def __init__(self): # 初始化訊息列表並添加系統訊息，包含問候語和AI指南
