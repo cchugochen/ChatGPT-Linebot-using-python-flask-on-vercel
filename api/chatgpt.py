@@ -14,11 +14,19 @@ class ChatGPT:
         self.max_tokens = int(os.getenv("OPENAI_MAX_TOKENS", default = 2000))
 
     def get_response(self):
-        response = client.chat.completions.create(
+        # 使用stream=True來初始化資料流
+        stream = client.chat.completions.create(
             model=self.model,
             messages=self.prompt.generate_prompt(),
+            stream=True,
         )
-        return response.choices[0].message.content
+        responses = []
+        for chunk in stream:
+            # 檢查是否有新的內容被發送
+            if chunk.choices[0].delta.content is not None:
+                responses.append(chunk.choices[0].delta.content)
+        # 將收集到的所有片段組合成一個完整的回應
+        return ''.join(responses)
 
     def add_msg(self, text):
         self.prompt.add_msg(text)
