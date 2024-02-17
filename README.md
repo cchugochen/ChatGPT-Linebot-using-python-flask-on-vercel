@@ -1,5 +1,8 @@
 # ChatGPT-Linebot using python flask on vercel 
 
+2024.2.17網路找到參考資料
+https://medium.com/@skywalker0803r/%E5%91%BD%E9%81%8B%E7%9F%B3%E4%B9%8B%E9%96%80%E8%B7%9Fopeaigpt%E5%92%8Clinebot%E4%BD%9C%E5%93%81-eeb60bbc6d71
+
 > 作者註：本專案因為作者我的免費 API 額度已經用完了，然後我現在使用的是 `ChatGPT Plus`，
 > 
 > 如果之後要我本人更新可能要等我哪天改用 ChatGPT API 了...
