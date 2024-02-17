@@ -10,8 +10,8 @@ class ChatGPT:
     def __init__(self):
         self.prompt = Prompt()
         self.model = os.getenv("OPENAI_MODEL", default = "gpt-4-turbo-preview")
-        self.temperature = float(os.getenv("OPENAI_TEMPERATURE", default = 0.1))
-        self.max_tokens = int(os.getenv("OPENAI_MAX_TOKENS", default = 900))
+        self.temperature = float(os.getenv("OPENAI_TEMPERATURE", default = 0.2))
+        self.max_tokens = int(os.getenv("OPENAI_MAX_TOKENS", default = 1500))
 
     def get_response(self):
         response = client.chat.completions.create(

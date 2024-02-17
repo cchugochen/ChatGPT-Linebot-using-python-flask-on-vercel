@@ -37,20 +37,23 @@ def callback():
 def handle_message(event):
     global working_status
     if event.message.type != "text":
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text="我只能處理文字"))
         return
 
-    if event.message.text == "hh*":
+    if event.message.text == "oo*":
         working_status = True
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text="我可以說話囉，歡迎來跟我互動 ^_^ "))
+            TextSendMessage(text="我可以說話囉，歡迎來跟我互動 ^_^ (關閉請輸入xx*)"))
         return
 
     if event.message.text == "xx*":
         working_status = False
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text="好的，我乖乖閉嘴 > <，如果想要我繼續說話，請跟我說 「hh*」 > <"))
+            TextSendMessage(text="好的，我乖乖閉嘴 > < (如果想要我繼續說話，請輸入hh*)"))
         return
 
     if working_status:
