@@ -25,7 +25,7 @@ def callback():
     # get request body as text
     body = request.get_data(as_text=True)
     app.logger.info("Request body: " + body)
-    # handle webhook body
+    
     try: # 嘗試處理Webhook通知內容
         line_handler.handle(body, signature)
     except InvalidSignatureError:
@@ -42,14 +42,14 @@ def handle_message(event):
             TextSendMessage(text="我只能處理文字"))
         return
 
-    if event.message.text == "oo**":
+    if event.message.text == "Oo**":
         working_status = True
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text="我可以說話囉，歡迎來跟我互動 ^_^ "))
         return
 
-    if event.message.text == "xx**":
+    if event.message.text == "Xx**":
         working_status = False
         line_bot_api.reply_message(
             event.reply_token,
@@ -57,9 +57,9 @@ def handle_message(event):
         return
 
     if working_status:
-        chatgpt.add_msg(f"user: {event.message.text}")
+        chatgpt.add_msg(f"user: {event.message.text}\n")
         reply_msg = chatgpt.get_response().replace("AI:", "", 1)
-        chatgpt.add_msg(f"AI:{reply_msg}'n")
+        chatgpt.add_msg(f"AI:{reply_msg}\n")
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=reply_msg))
