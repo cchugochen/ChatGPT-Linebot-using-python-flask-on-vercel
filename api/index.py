@@ -36,10 +36,17 @@ def callback():
 @line_handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     global working_status # 引用全局變量以改變機器人的對話狀態
+    activation_sign = "@#" # 定義機器人被啟用的訊息開頭標記
+    
+    if not event.message.text.startswith(activation_sign):
+        # 如果消息不是以特定標記開頭，則不處理這條消息
+        return
+    actual_message = event.message.text[len(activation_sign):].strip()
+
     if event.message.type != "text":
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text="我只能處理文字"))
+            TextSendMessage(text="我只能看得懂文字"))
         return
 
     if event.message.text == "Oo**":
@@ -57,7 +64,7 @@ def handle_message(event):
         return
     
     if working_status:
-        chatgpt.add_msg(f"user: {event.message.text}\n")
+        chatgpt.add_msg(f"user: {actual_message}\n")
         # 將原本的chatgpt.get_response()調用包裹在try-except塊中
         try:
             reply_msg = chatgpt.get_response().replace("AI:", "", 1)
