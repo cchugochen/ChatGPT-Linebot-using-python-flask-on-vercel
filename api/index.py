@@ -8,7 +8,7 @@ import os
 
 line_bot_api = LineBotApi(os.getenv("LINE_CHANNEL_ACCESS_TOKEN"))
 line_handler = WebhookHandler(os.getenv("LINE_CHANNEL_SECRET"))
-working_status = os.getenv("DEFALUT_TALKING", default = "true").lower() == "true"
+working_status = os.getenv("DEFAULT_TALKING", default = "true").lower() == "true"
 
 app = Flask(__name__)
 chatgpt = ChatGPT()
@@ -42,14 +42,14 @@ def handle_message(event):
             TextSendMessage(text="我只能處理文字"))
         return
 
-    if event.message.text == "oo*":
+    if event.message.text == "oo**":
         working_status = True
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text="我可以說話囉，歡迎來跟我互動 ^_^ "))
         return
 
-    if event.message.text == "xx*":
+    if event.message.text == "xx**":
         working_status = False
         line_bot_api.reply_message(
             event.reply_token,
