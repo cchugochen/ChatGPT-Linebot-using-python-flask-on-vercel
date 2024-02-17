@@ -9,9 +9,9 @@ client.api_key = os.getenv("OPENAI_API_KEY")
 class ChatGPT:
     def __init__(self):
         self.prompt = Prompt()
-        self.model = os.getenv("OPENAI_MODEL", default = "gpt-4-turbo-preview")
+        self.model = os.getenv("OPENAI_MODEL", default = "gpt-3.5-turbo-0125")
         self.temperature = float(os.getenv("OPENAI_TEMPERATURE", default = 0.2))
-        self.max_tokens = int(os.getenv("OPENAI_MAX_TOKENS", default = 2000))
+        self.max_tokens = int(os.getenv("OPENAI_MAX_TOKENS", default = 1500))
 
     def get_response(self):
         # 使用stream=True來初始化資料流
