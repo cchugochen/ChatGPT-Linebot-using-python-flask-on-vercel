@@ -2,8 +2,8 @@ import os
 
 chat_language = os.getenv("INIT_LANGUAGE", default = "zh-TW")
 
-# 從環境變數設定訊息列表上限，若未設定則預設為7
-MSG_LIST_LIMIT = int(os.getenv("MSG_LIST_LIMIT", default = 10))
+# 從環境變數設定訊息列表上限，若未設定則預設為20
+MSG_LIST_LIMIT = int(os.getenv("MSG_LIST_LIMIT", default = 20))
 LANGUAGE_TABLE = {
   "zh-TW": "哈囉！",
   "en": "Hello!"

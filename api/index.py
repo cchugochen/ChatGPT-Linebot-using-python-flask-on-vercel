@@ -16,7 +16,7 @@ chatgpt = ChatGPT()
 # domain root
 @app.route('/') # 定義根路徑的處理函數，當訪問根路徑時返回歡迎信息
 def home():
-    return 'Hello, World! This is a linebot with GPT, Flask'
+    return 'Hello, World! This is a linebot with GPT-3.5 and Flask'
 
 @app.route("/webhook", methods=['POST']) # 定義Webhook路徑的處理函數，用於接收並處理LINE平台的事件通知
 def callback():
@@ -55,15 +55,24 @@ def handle_message(event):
             event.reply_token,
             TextSendMessage(text="好的，我乖乖閉嘴 > < "))
         return
-
+    
     if working_status:
         chatgpt.add_msg(f"user: {event.message.text}\n")
-        reply_msg = chatgpt.get_response().replace("AI:", "", 1)
+        # 將原本的chatgpt.get_response()調用包裹在try-except塊中
+        try:
+            reply_msg = chatgpt.get_response().replace("AI:", "", 1)
+        except Exception as e:
+            app.logger.error(f"Error while getting response from ChatGPT: {e}")
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text="很抱歉，我現在無法回答您的問題，請稍後再試。")
+            )
+            return  # 發生異常時終止函數執行
+        
         chatgpt.add_msg(f"AI:{reply_msg}\n")
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=reply_msg))
-
 
 if __name__ == "__main__":
     app.run()
