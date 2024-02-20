@@ -1,29 +1,50 @@
-from api.prompt import Prompt
 import os
 from openai import OpenAI
+
+# 環境變數配置
 client = OpenAI()
-
 client.api_key = os.getenv("OPENAI_API_KEY")
+chat_language = os.getenv("INIT_LANGUAGE", default="zh-TW")
+MSG_LIST_LIMIT = int(os.getenv("MSG_LIST_LIMIT", default=20))
+LANGUAGE_TABLE = {
+    "zh-TW": "哈囉！",
+    "en": "Hello!"
+}
+AI_GUIDELINES = 'You are a helpful assistant. Using zh-TW mainly, but maintain English(or original text) for professional terms.'
 
+class Prompt:
+    def __init__(self):
+        self.msg_list = [] 
+        self.msg_list.append({
+            "role": "system", 
+            "content": f"{LANGUAGE_TABLE[chat_language]} + {AI_GUIDELINES})"
+        })
+
+    def add_msg(self, new_msg):
+        if len(self.msg_list) >= MSG_LIST_LIMIT:
+            self.msg_list.pop(0)
+        self.msg_list.append({"role": "user", "content": new_msg})
+
+    def generate_prompt(self):
+        return self.msg_list
 
 class ChatGPT:
     def __init__(self):
         self.prompt = Prompt()
-        self.model = os.getenv("OPENAI_MODEL", default = "gpt-3.5-turbo-0125")
-        self.temperature = float(os.getenv("OPENAI_TEMPERATURE", default = 0.2))
-        self.max_tokens = int(os.getenv("OPENAI_MAX_TOKENS", default = 1500))
+        self.model = os.getenv("OPENAI_MODEL", default="gpt-3.5-turbo-0125")
+        self.temperature = float(os.getenv("OPENAI_TEMPERATURE", default=0.2))
+        self.max_tokens = int(os.getenv("OPENAI_MAX_TOKENS", default=1500))
 
-    def get_response(self):   # 使用stream=True來初始化資料流
+    def get_response(self):
         stream = client.chat.completions.create(
             model=self.model,
             messages=self.prompt.generate_prompt(),
             stream=True,
         )
         responses = []
-        for chunk in stream:# 檢查是否有新的內容被發送
+        for chunk in stream:
             if chunk.choices[0].delta.content is not None:
                 responses.append(chunk.choices[0].delta.content)
-        # 將收集到的所有片段組合成一個完整的回應
         return ''.join(responses)
 
     def add_msg(self, text):
