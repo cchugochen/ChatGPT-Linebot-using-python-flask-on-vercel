@@ -16,7 +16,7 @@ chatgpt = ChatGPT()
 # domain root
 @app.route('/') # 定義根路徑的處理函數，當訪問根路徑時返回歡迎信息
 def home():
-    return 'Hello, World! This is a linebot with GPT-3.5 and Flask'
+    return 'Hello, World! This is a linebot with GPT and Flask'
 
 @app.route("/webhook", methods=['POST']) # 定義Webhook路徑的處理函數，用於接收並處理LINE平台的事件通知
 def callback():
