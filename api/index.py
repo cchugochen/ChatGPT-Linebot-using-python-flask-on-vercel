@@ -33,28 +33,29 @@ def callback():
 @line_handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     global working_status # 引用全局變量以改變機器人的對話狀態
-    msg = event.message.text.strip()
     
-    user_id = event.source.user_id  # 取得 userID
-    file_path = f'log/{user_id}.txt'  # 定義用戶對話記錄的文件路徑
-    if not os.path.exists('log'):
-        os.makedirs('log')
+    #user_id = event.source.user_id  # 取得 userID
 
+    #file_path = f'log/{user_id}.txt'  # 定義用戶對話記錄的文件路徑
+    #if not os.path.exists('log'):
+     #   os.makedirs('log')
+    
+    #msg = event.message.text.strip()
     # 對話記錄管理
-    if msg.startswith('remove'):
-        open(file_path, 'w').write("")
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Your record has been cleared!'))
-        return
-    else:
-        with open(file_path, 'a+', encoding='utf-8') as file:
-            file.write(msg + '\n')
-            file.seek(0)
-            conversation = file.read()
+    #if msg.startswith('remove'):
+    #    open(file_path, 'w').write("")
+    #    line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Your record has been cleared!'))
+    #    return
+    #else:
+    #    with open(file_path, 'a+', encoding='utf-8') as file:
+    #        file.write(msg + '\n')
+    #        file.seek(0)
+    #        conversation = file.read()
             
-        # 確保只保留最近 2000 字元
-        if len(conversation) > 2000:
-            with open(file_path, 'w', encoding='utf-8') as file:
-                file.write(conversation[-2000:])
+    #    # 確保只保留最近 2000 字元
+    #    if len(conversation) > 2000:
+    #        with open(file_path, 'w', encoding='utf-8') as file:
+    #            file.write(conversation[-2000:])
 
     activation_sign = "@#" # 定義機器人被啟用的訊息開頭標記
     
