@@ -5,19 +5,19 @@ from openai import OpenAI
 client = OpenAI()
 client.api_key = os.getenv("OPENAI_API_KEY")
 chat_language = os.getenv("INIT_LANGUAGE", default="zh-TW")
-MSG_LIST_LIMIT = int(os.getenv("MSG_LIST_LIMIT", default=20))
+MSG_LIST_LIMIT = int(os.getenv("MSG_LIST_LIMIT", default=15))
 LANGUAGE_TABLE = {
     "zh-TW": "哈囉！",
     "en": "Hello!"
 }
-AI_GUIDELINES = 'I am are a helpful assistant. Using zh-TW mainly, but maintain English(or original text) for professional terms.'
+AI_SYS_PROMPT = 'I am are a helpful assistant. Using zh-TW mainly, but maintain English(or original text) for professional terms.'
 
 class Prompt:
     def __init__(self):
         self.msg_list = [] 
         self.msg_list.append({
             "role": "system", 
-            "content": f"{LANGUAGE_TABLE[chat_language]} + {AI_GUIDELINES})"
+            "content": f"{LANGUAGE_TABLE[chat_language]} + {AI_SYS_PROMPT})"
         })
 
     def add_msg(self, new_msg):
@@ -33,7 +33,7 @@ class ChatGPT:
         self.prompt = Prompt()
         self.model = os.getenv("OPENAI_MODEL", default="gpt-3.5-turbo-0125")
         self.temperature = float(os.getenv("OPENAI_TEMPERATURE", default=0.2))
-        self.max_tokens = int(os.getenv("OPENAI_MAX_TOKENS", default=3000))
+        self.max_tokens = int(os.getenv("OPENAI_MAX_TOKENS", default=1500))
 
     def get_response(self):
         stream = client.chat.completions.create(

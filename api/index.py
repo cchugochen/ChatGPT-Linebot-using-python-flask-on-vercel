@@ -20,9 +20,7 @@ def home():
 
 @app.route("/webhook", methods=['POST']) # 定義Webhook路徑的處理函數，用於接收並處理LINE平台的事件通知
 def callback():
-    # 獲取請求頭中的X-Line-Signature值，用於後續的驗證
     signature = request.headers['X-Line-Signature']
-    # get request body as text
     body = request.get_data(as_text=True)
     app.logger.info("Request body: " + body)
     
@@ -32,10 +30,32 @@ def callback():
         abort(400)
     return 'OK'
 
-
 @line_handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     global working_status # 引用全局變量以改變機器人的對話狀態
+    msg = event.message.text.strip()
+    
+    user_id = event.source.user_id  # 取得 userID
+    file_path = f'log/{user_id}.txt'  # 定義用戶對話記錄的文件路徑
+    if not os.path.exists('log'):
+        os.makedirs('log')
+
+    # 對話記錄管理
+    if msg.startswith('remove'):
+        open(file_path, 'w').write("")
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Your record has been cleared!'))
+        return
+    else:
+        with open(file_path, 'a+', encoding='utf-8') as file:
+            file.write(msg + '\n')
+            file.seek(0)
+            conversation = file.read()
+            
+        # 確保只保留最近 2000 字元
+        if len(conversation) > 2000:
+            with open(file_path, 'w', encoding='utf-8') as file:
+                file.write(conversation[-2000:])
+
     activation_sign = "@#" # 定義機器人被啟用的訊息開頭標記
     
     if not event.message.text.startswith(activation_sign):
@@ -53,14 +73,14 @@ def handle_message(event):
         working_status = True
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text="我可以說話囉，歡迎來跟我互動 ^_^ "))
+            TextSendMessage(text="我可以說話囉，歡迎來跟我互動"))
         return
 
     if event.message.text == "Xx**":
         working_status = False
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text="好的，我乖乖閉嘴 > < "))
+            TextSendMessage(text="好的，我乖乖閉嘴"))
         return
     
     if working_status:
