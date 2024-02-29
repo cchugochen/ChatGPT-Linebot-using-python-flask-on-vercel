@@ -33,7 +33,7 @@ class ChatGPT:
         messages += [{"role": "user", "content": msg} for msg in user_conversations[user_id].split('\n')]
 
         response = client.chat.completions.create(
-            model='gpt-4-turbo-preview',
+            model='gpt-3.5-turbo-0125',
             messages=messages,
             temperature=0.2,
             max_tokens=1500,
