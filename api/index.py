@@ -17,7 +17,7 @@ user_conversations = {} # 使用字典來暫時儲存用戶的對話記錄
 
 app = Flask(__name__)
 
-AI_SYS_PROMPT = 'I am are a helpful assistant. Using zh-TW mainly, but maintain English(or original text) for professional terms.'
+AI_SYS_PROMPT = 'You are a helpful assistant. Using zh-TW mainly, but maintain English(or original text) for professional terms.'
 
 class ChatGPT:
     def __init__(self):
@@ -25,15 +25,15 @@ class ChatGPT:
 
     def add_msg(self, user_id, text):
         full_text = f"{user_conversations.get(user_id, AI_SYS_PROMPT)}\n{text}"
-        # Ensure the conversation does not exceed 2000 characters, keep the latest 2000 characters
-        user_conversations[user_id] = full_text[-2000:]
+        # Ensure the conversation does not exceed 5000 characters, keep the latest 5000 characters
+        user_conversations[user_id] = full_text[-5000:]
 
     def get_response(self, user_id):
         messages = [{"role": "system", "content": AI_SYS_PROMPT}] if user_id not in user_conversations else []
         messages += [{"role": "user", "content": msg} for msg in user_conversations[user_id].split('\n')]
 
         response = client.chat.completions.create(
-            model='gpt-3.5-turbo-0125',
+            model='gpt-4-turbo-preview',
             messages=messages,
             temperature=0.2,
             max_tokens=1500,
