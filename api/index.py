@@ -21,33 +21,24 @@ AI_SYS_PROMPT = 'I am are a helpful assistant. Using zh-TW mainly, but maintain 
 
 class ChatGPT:
     def __init__(self):
-        self.model = os.getenv("OPENAI_MODEL", default="gpt-3.5-turbo-0125")
-        self.temperature = float(os.getenv("OPENAI_TEMPERATURE", default=0.2))
-        self.max_tokens = int(os.getenv("OPENAI_MAX_TOKENS", default=1500))
         self.messages = []
 
     def add_msg(self, user_id, text):
-        if user_id not in user_conversations:
-            user_conversations[user_id] = f"{AI_SYS_PROMPT}\n{text}"  # Initialize with system prompt
-        else:
-            user_conversations[user_id] += f"\n{text}"  # Append new user text
+        full_text = f"{user_conversations.get(user_id, AI_SYS_PROMPT)}\n{text}"
+        # Ensure the conversation does not exceed 2000 characters, keep the latest 2000 characters
+        user_conversations[user_id] = full_text[-2000:]
 
-        # Rebuild self.messages based on the latest conversation
-        self.messages = [{"role": "system", "content": AI_SYS_PROMPT}] + [{"role": "user", "content": msg} for msg in user_conversations[user_id].split('\n')]
+    def get_response(self, user_id):
+        messages = [{"role": "system", "content": AI_SYS_PROMPT}] if user_id not in user_conversations else []
+        messages += [{"role": "user", "content": msg} for msg in user_conversations[user_id].split('\n')]
 
-    def get_response(self):
-        stream = client.chat.completions.create(
-            model=self.model,
-            messages=self.messages,
-            temperature=self.temperature,
-            max_tokens=self.max_tokens,
-            stream=True,
+        response = client.chat.completions.create(
+            model='gpt-3.5-turbo-0125',
+            messages=messages,
+            temperature=0.2,
+            max_tokens=1500,
         )
-        responses = []
-        for chunk in stream:
-            if chunk.choices[0].delta.content is not None:
-                responses.append(chunk.choices[0].delta.content)
-        return ''.join(responses)
+        return response.choices[0].message.content
 
 chatgpt = ChatGPT()  #模組chatgpt函數
 
@@ -71,28 +62,13 @@ def callback():
 @line_handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     global working_status # 引用全局變量以改變機器人的對話狀態
-    activation_sign = "@#" # 定義機器人被啟用的訊息開頭標記
-    
+
     user_id = event.source.user_id  # 取得 userID
     msg = event.message.text.strip()
 
-    # Ensure user conversations do not exceed 2000 characters
-    if user_id in user_conversations:
-        user_conversations[user_id] += f"\n{msg}"
-        # If the record exceeds 2000 characters, keep the latest 2000 characters
-        user_conversations[user_id] = user_conversations[user_id][-2000:]
-    else:
-        user_conversations[user_id] = msg
-
-    if not event.message.text.startswith(activation_sign):
-        # 如果消息不是以特定標記開頭，則不處理這條消息
-        return
+    if not msg.startswith("@#"):
+        return  # 如果消息不是以特定標記開頭，則不處理這條消息
     
-    actual_message = event.message.text[len(activation_sign):].strip()
-    # Prepend user's previous conversation to the actual_message
-    previous_conversation = user_conversations.get(user_id, "")
-    combined_message = f"{previous_conversation}\n{actual_message}"
-
     if event.message.type != "text":
         line_bot_api.reply_message(
             event.reply_token,
@@ -114,11 +90,16 @@ def handle_message(event):
         return
     
     if working_status:
-        chatgpt.add_msg(f"user: {combined_message}\n")
+        actual_message = actual_message = msg[len("@#"):].strip()
+        
+         # Prepend user's previous conversation to the actual_message
+        chatgpt.add_msg(user_id, actual_message)
         # 將原本的chatgpt.get_response()調用包裹在try-except塊中
         try:
-            reply_msg = chatgpt.get_response().replace("AI:", "", 1)
-            user_conversations[user_id] += f"\nAI:{reply_msg}"
+            reply_msg = chatgpt.get_response(user_id)
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=reply_msg))
         except Exception as e:
             app.logger.error(f"Error while getting response from ChatGPT: {e}")
             line_bot_api.reply_message(
@@ -126,10 +107,6 @@ def handle_message(event):
                 TextSendMessage(text="很抱歉，我現在無法回答您的問題，請稍後再試。")
             )
             return  # 發生異常時終止函數執行
-        
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=reply_msg))
 
 if __name__ == "__main__":
     app.run()
